@@ -9,6 +9,7 @@ environment:
 install:
   - npm install
   - npm install elm -g 
+  - npm install webpack -g 
   - elm-package install --yes
 
 build_script:
