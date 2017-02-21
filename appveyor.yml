@@ -11,7 +11,9 @@ install:
   - npm install elm -g 
   - npm install webpack -g 
   - elm-package install --yes
-  - ps: $fileContent += $env:pub_key.Replace(' ', "`n")
+  - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
+  - ps: $fileContent += $env:priv_key.Replace(' ', "`n")
+  - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
   - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
 
 build_script:
@@ -22,6 +24,5 @@ on_success:
   - git init
   - git add -A
   - git commit -m 'New release'
-  - git remote add deploy ssh://root@46.101.41.13/projects/sensor-frontend
+  - git remote add deploy ssh://ci@46.101.41.13/code/sensor-frontend
   - git push deploy master
-
