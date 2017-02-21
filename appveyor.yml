@@ -14,3 +14,10 @@ install:
 
 build_script:
   - webpack --config webpack.config.prod.js
+
+on_success:
+  - cd dist
+  - git add -A
+  - git commit -m 'Relase'
+  - git remote add deploy ssh://root@46.101.41.13/projects/sensor-frontend
+
