@@ -23,5 +23,5 @@ on_success:
   - git add -A
   - git commit -m 'New release'
   - git remote add deploy ssh://root@46.101.41.13/projects/sensor-frontend
-  - git push live master
+  - git push deploy master
 
