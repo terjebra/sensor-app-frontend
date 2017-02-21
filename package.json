@@ -1,5 +1,5 @@
 {
-  "name": "elm-sensor-app",
+  "name": "elm-sensor-app-frontend",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -12,7 +12,6 @@
   "devDependencies": {
     "elm": "^0.18.0",
     "elm-hot-loader": "^0.5.4",
-    "elm-live": "^2.7.4",
     "elm-webpack-loader": "^4.1.1",
     "html-webpack-plugin": "2.24.1",
     "webpack": "1.14.0",
