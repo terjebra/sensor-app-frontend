@@ -26,5 +26,5 @@ on_success:
   - git init
   - git add -A
   - git commit -m 'New release'
-  - git remote add deploy ssh://ci@46.101.41.13/code/sensor-frontend
+  - git remote add deploy ssh://ci@46.101.41.13/hom/ci/code/sensor-frontend
   - git push deploy master
