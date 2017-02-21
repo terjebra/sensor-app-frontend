@@ -11,6 +11,10 @@ install:
   - npm install elm -g 
   - npm install webpack -g 
   - elm-package install --yes
+  - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
+  - ps: $fileContent += $env:pub_key.Replace(' ', "`n")
+  - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
+  - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
 
 build_script:
   - webpack --config webpack.config.prod.js
