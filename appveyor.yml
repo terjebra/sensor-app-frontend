@@ -33,4 +33,4 @@ on_success:
   - git add .
   - git commit -m "New release"
   - git remote add deploy ssh://ci@46.101.41.13/home/ci/code/sensor-frontend.git
-  - git push deploy master
+  - git push --force deploy master
