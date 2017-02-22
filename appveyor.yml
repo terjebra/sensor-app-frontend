@@ -18,6 +18,12 @@ install:
   - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
   - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
   - ps: Get-Content c:\users\appveyor\.ssh\id_rsa
+  - ps: $fileContent = "Host 46.101.41.13`n"
+  - ps: $fileContent += "~/.ssh/ci_rsa
+  - ps: Set-Content c:\users\appveyor\.ssh\config $fileContent
+  - ps: Get-Content c:\users\appveyor\.ssh\config
+
+
 
 build_script:
   - webpack --config webpack.config.prod.js
