@@ -322,7 +322,7 @@ viewHeader : ReadyModel -> Html ReadyMsg
 viewHeader model =
     Layout.row
         []
-        [ Layout.title [] [ text "Sensor data" ]
+        [ Layout.title [] [ text "Sensor data FTW" ]
         , Layout.spacer
         , Layout.navigation []
             [ Layout.link
