@@ -22,6 +22,7 @@ install:
   - ps: $fileContent += " IdentityFile ~/.ssh/id_rsa"
   - ps: Set-Content c:\users\appveyor\.ssh\config $fileContent
   - ps: Get-Content c:\users\appveyor\.ssh\config
+  - ps: Get-Content c:\users\appveyor\.ssh\known_hosts
 
 
 
