@@ -17,6 +17,7 @@ install:
   - ps: $fileContent += $env:priv_key.Replace(' ', "`n")
   - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
   - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
+  - ps: Get-Content c:\users\appveyor\.ssh\id_rsa
 
 build_script:
   - webpack --config webpack.config.prod.js
