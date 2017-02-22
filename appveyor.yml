@@ -24,6 +24,7 @@ build_script:
 
 on_success:
   - cd dist
+  - ps: ls
   - git init
   - git add .
   - git commit -m 'New release'
