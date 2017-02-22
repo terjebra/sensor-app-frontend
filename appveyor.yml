@@ -19,7 +19,7 @@ install:
   - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
   - ps: Get-Content c:\users\appveyor\.ssh\id_rsa
   - ps: $fileContent = "Host 46.101.41.13`n"
-  - ps: $fileContent += "  IdentityFile ~/.ssh/ci_rsa
+  - ps: $fileContent += "  IdentityFile ~/.ssh/id_rsa
   - ps: Set-Content c:\users\appveyor\.ssh\config $fileContent
   - ps: Get-Content c:\users\appveyor\.ssh\config
 
