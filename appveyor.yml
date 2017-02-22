@@ -13,7 +13,7 @@ install:
   - npm install elm -g 
   - npm install webpack -g 
   - elm-package install --yes
-  - ps: ssh-keygen -R 46.101.41.13
+  - ssh-keyscan -t rsa 46.101.41.13 >> c:\users\appveyor\.ssh\known_hosts
   - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
   - ps: $fileContent += $env:priv_key.Replace(' ', "`n")
   - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
