@@ -27,6 +27,7 @@ on_success:
   - ps: ls
   - git init
   - git add .
-  - git commit -m 'New release'
+  - git status
+  - git commit -m "New release"
   - git remote add deploy ssh://ci@46.101.41.13/home/ci/code/sensor-frontend
   - git push deploy master
