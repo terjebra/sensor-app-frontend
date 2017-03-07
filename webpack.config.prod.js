@@ -47,8 +47,8 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      API_URL: JSON.stringify('http://localhost:4000/api/temperatures'),
-      SOCKET_URL: JSON.stringify('ws://localhost:4000/socket/websocket')
+      API_URL: JSON.stringify('http://46.101.41.13:8080/api/temperatures'),
+      SOCKET_URL: JSON.stringify('ws://46.101.41.13:8080/socket/websocket')
     }),
     new HtmlWebpackPlugin({
       inject: true,
