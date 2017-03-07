@@ -30,7 +30,7 @@ formatTime date =
 
 secondsToTimeFormat : Float -> String
 secondsToTimeFormat seconds =
-    (toString (convertSecondsToHours seconds) |> addPadding) ++ ":" ++ (toString (convertSecondsToMinutes seconds) |> addPadding) ++ ":" ++ (toString (convertSecondsToSeconds seconds) |> addPadding)
+    (toString (convertSecondsToHours seconds) |> addPadding)
 
 
 convertSecondsToHours : Float -> Int
@@ -77,5 +77,38 @@ getTimeInSecondsFromString dateString =
         Ok value ->
             timeInSeconds value
 
-        Err error ->
+        Err error3 ->
             0
+
+
+formatDate : Date -> String
+formatDate date =
+    toString (Date.year date) ++ "-" ++ toString (Date.month date) ++ toString (Date.day date)
+
+
+getDateFromString : String -> Maybe Date
+getDateFromString dateString =
+    case Date.fromString dateString of
+        Ok value ->
+            Just value
+
+        Err error ->
+            Nothing
+
+
+isSameDay : String -> String -> Bool
+isSameDay dateStringOne dateStringTwo =
+    case getDateFromString dateStringOne of
+        Just dateOne ->
+            case getDateFromString dateStringTwo of
+                Just dateTwo ->
+                    if Date.year dateOne == Date.year dateTwo && Date.month dateOne == Date.month dateTwo && Date.day dateOne == Date.day dateTwo then
+                        True
+                    else
+                        False
+
+                Nothing ->
+                    False
+
+        Nothing ->
+            False

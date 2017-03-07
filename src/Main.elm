@@ -171,7 +171,10 @@ updateReadyModel msg model =
         ReceiveNewTemperature raw ->
             case Decode.decodeValue temperatureDecoder raw of
                 Ok temperature ->
-                    ( { model | alertMessage = Just "New temperature received", temperatures = temperature :: model.temperatures }, Cmd.none )
+                    if isWithinSameDay model temperature then
+                        ( { model | alertMessage = Just "New temperature received", temperatures = model.temperatures ++ [ temperature ] }, Cmd.none )
+                    else
+                        ( { model | alertMessage = Just "New temperature received", temperatures = [ temperature ] }, Cmd.none )
 
                 Err error ->
                     ( { model | alertMessage = Just "errr " }, Cmd.none )
@@ -195,6 +198,16 @@ updateReadyModel msg model =
                     Snackbar.update msg_ model.snackbar
             in
                 ( { model | snackbar = snackbar }, Cmd.map Snackbar snackCmd )
+
+
+isWithinSameDay : ReadyModel -> Temperature -> Bool
+isWithinSameDay model temperature =
+    case List.head (List.reverse model.temperatures) of
+        Just head ->
+            Utils.isSameDay head.date temperature.date
+
+        Nothing ->
+            True
 
 
 joinChannel : ReadyModel -> Cmd ReadyMsg
@@ -233,7 +246,7 @@ httpErrorToMessage error =
 getTemperatures : CustomPorts.Settings -> Cmd ReadyMsg
 getTemperatures settings =
     (Decode.list temperatureDecoder)
-        |> Http.get settings.apiUrl
+        |> Http.get (settings.apiUrl ++ "?date=" ++ settings.date)
         |> Http.send NewTemperatures
 
 
