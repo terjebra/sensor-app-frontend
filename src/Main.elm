@@ -264,9 +264,8 @@ toTickStyle { index } =
 viewPlot : ReadyModel -> Svg.Svg msg
 viewPlot model =
     plot
-        [ Plot.size ( 1600, 800 )
-        , margin ( 200, 100, 40, 100 )
-        , Plot.id "PlotHint"
+        [ Plot.size ( 800, 600 )
+        , margin ( 40, 40, 40, 40 )
         , Plot.style [ ( "position", "relative" ) ]
         , domainLowest (Basics.min minTemperature)
         , domainHighest (Basics.max maxTemperature)
