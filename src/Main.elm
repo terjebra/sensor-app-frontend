@@ -13,12 +13,6 @@ import Material.Layout as Layout
 import Material.Snackbar as Snackbar
 import Material.Options as Options exposing (css, cs, when)
 import Material.Grid as Grid exposing (grid, size, cell, Device(..))
-import Plot exposing (..)
-import Plot.Line as Line
-import Plot.Axis as Axis
-import Svg
-import Plot.Tick as Tick
-import Plot.Label as Label
 import Utils exposing (..)
 import CustomPorts exposing (..)
 import Material.Spinner as Loading
@@ -35,25 +29,6 @@ temperatureChannel =
 temperatureChannelEvent : String
 temperatureChannelEvent =
     "registered"
-
-
-
---seconds in a day
-
-
-endTime : Float
-endTime =
-    86399
-
-
-minTemperature : Float
-minTemperature =
-    0
-
-
-maxTemperature : Float
-maxTemperature =
-    35
 
 
 type AppModel
@@ -172,9 +147,13 @@ updateReadyModel msg model =
             case Decode.decodeValue temperatureDecoder raw of
                 Ok temperature ->
                     if isWithinSameDay model temperature then
-                        ( { model | alertMessage = Just "New temperature received", temperatures = model.temperatures ++ [ temperature ] }, Cmd.none )
+                        ( { model | alertMessage = Just "New temperature received", temperatures = model.temperatures ++ [ temperature ] }
+                        , updateChart (getChartTemperatures model.temperatures)
+                        )
                     else
-                        ( { model | alertMessage = Just "New temperature received", temperatures = [ temperature ] }, Cmd.none )
+                        ( { model | alertMessage = Just "New temperature received", temperatures = [ temperature ] }
+                        , updateChart (getChartTemperatures model.temperatures)
+                        )
 
                 Err error ->
                     ( { model | alertMessage = Just "errr " }, Cmd.none )
@@ -183,7 +162,7 @@ updateReadyModel msg model =
             ( { model | alertMessage = Just "Joined " }, Cmd.none )
 
         PhoenixMsg msg_ ->
-            ( model, Cmd.none )
+            ( model, showChart (getChartTemperatures model.temperatures) )
 
         Mdl msg_ ->
             let
@@ -254,57 +233,15 @@ getTemperatures settings =
 --View
 
 
-toTickStyle : Axis.LabelInfo -> List (Tick.StyleAttribute msg)
-toTickStyle { index } =
-    [ Tick.length 5
-    , Tick.stroke "#b9b9b9"
-    ]
-
-
-viewPlot : ReadyModel -> Svg.Svg msg
-viewPlot model =
-    plot
-        [ Plot.size ( 800, 600 )
-        , margin ( 40, 40, 40, 40 )
-        , Plot.style [ ( "position", "relative" ) ]
-        , domainLowest (Basics.min minTemperature)
-        , domainHighest (Basics.max maxTemperature)
-        , rangeLowest (Basics.min 0)
-        , rangeHighest (Basics.max endTime)
-        ]
-        [ line
-            [ Line.stroke "#C44D58"
-            , Line.strokeWidth 2
-            , Line.smoothingBezier
-            ]
-            (getPoints model.temperatures)
-        , xAxis
-            [ Axis.line []
-            , Axis.tickDelta 3600
-            , Axis.label
-                [ Label.format
-                    (\{ index, value } ->
-                        secondsToTimeFormat
-                            value
-                    )
-                ]
-            ]
-        , yAxis
-            [ Axis.line
-                [ Line.stroke "#556270" ]
-            ]
-        ]
-
-
-getPoints : List Temperature -> List ( Float, Float )
-getPoints temperatures =
+getChartTemperatures : List Temperature -> List ChartTemperature
+getChartTemperatures temperatures =
     temperatures
-        |> List.map getPoint
+        |> List.map getTemperature
 
 
-getPoint : Temperature -> ( Float, Float )
-getPoint temperature =
-    ( Utils.getTimeInSecondsFromString temperature.date, temperature.reading )
+getTemperature : Temperature -> ChartTemperature
+getTemperature temperature =
+    { reading = temperature.reading, date = (getLocalDateString temperature.date) }
 
 
 viewMain : ReadyModel -> Html ReadyMsg
@@ -315,7 +252,7 @@ viewMain model =
             , Grid.size Tablet 8
             , Grid.size Phone 12
             ]
-            [ viewPlot model ]
+            [ div [ id "chart" ] [] ]
         ]
 
 
