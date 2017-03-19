@@ -148,11 +148,11 @@ updateReadyModel msg model =
                 Ok temperature ->
                     if isWithinSameDay model temperature then
                         ( { model | alertMessage = Just "New temperature received", temperatures = model.temperatures ++ [ temperature ] }
-                        , updateChart (getChartTemperatures model.temperatures)
+                        , updateChart (getChartTemperature temperature)
                         )
                     else
                         ( { model | alertMessage = Just "New temperature received", temperatures = [ temperature ] }
-                        , updateChart (getChartTemperatures model.temperatures)
+                        , updateChart (getChartTemperature temperature)
                         )
 
                 Err error ->
@@ -236,11 +236,11 @@ getTemperatures settings =
 getChartTemperatures : List Temperature -> List ChartTemperature
 getChartTemperatures temperatures =
     temperatures
-        |> List.map getTemperature
+        |> List.map getChartTemperature
 
 
-getTemperature : Temperature -> ChartTemperature
-getTemperature temperature =
+getChartTemperature : Temperature -> ChartTemperature
+getChartTemperature temperature =
     { reading = temperature.reading, date = (getLocalDateString temperature.date) }
 
 

@@ -86,8 +86,8 @@ chart = AmCharts.makeChart("chart", {
     }
 });
 
-app.ports.updateChart.subscribe(function(items) {
-    chart.dataProvider = items;
+app.ports.updateChart.subscribe(function(item) {
+    chart.dataProvider.push(item);
     chart.validateData();
 });
 

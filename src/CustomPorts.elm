@@ -20,4 +20,4 @@ port receiveSettings : (Settings -> msg) -> Sub msg
 port showChart : List ChartTemperature -> Cmd msg
 
 
-port updateChart : List ChartTemperature -> Cmd msg
+port updateChart : ChartTemperature -> Cmd msg
