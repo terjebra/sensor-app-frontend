@@ -41,7 +41,7 @@ chart = AmCharts.makeChart("chart", {
         "title": "red line",
         "useLineColorForBulletBorder": true,
         "valueField": "reading",
-        "balloonText": "<span style='font-size:18px;'>[[value]]</span>"
+        "balloonText": "<span style='font-size:8px;'>[[value]]</span>"
     }],
     "chartScrollbar": {
         "graph": "g1",
@@ -66,7 +66,8 @@ chart = AmCharts.makeChart("chart", {
         "cursorColor":"#258cbb",
         "limitToGraph":"g1",
         "valueLineAlpha":0.2,
-        "valueZoomable":true
+        "valueZoomable":true,
+        "categoryBalloonDateFormat": "JJ:NN:SS"
     },
     "categoryField": "date",
     "categoryAxis": {
