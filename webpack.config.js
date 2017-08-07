@@ -10,12 +10,31 @@ const paths = {
   elmMake: path.resolve(__dirname, './node_modules/.bin/elm-make')
 }
 
+const rules = [
+  
+  {
+    loader: 'elm-hot-loader',
+    test: /\.elm$/,
+    exclude: [ /elm-stuff/, /node_modules/ ],
+  },
+  {
+   loader: 'elm-webpack-loader',
+   test: /\.elm$/,
+   options: {
+      verbose: true,
+      debug: true,
+      warn: true,
+    }
+  },
+  {
+    test: /\.json$/,
+    loader: 'json-loader'
+  },
+]
 module.exports = {
-
   devtool: 'eval',
 
-   entry: [
-    'webpack-dev-server/client',
+  entry: [
     paths.entry
   ],
   output: {
@@ -29,22 +48,13 @@ module.exports = {
     publicPath: '/'
   },
   resolve: {
-    extensions: ['', '.js', '.elm']
+    extensions: ['.js', '.elm']
   },
-  module: {
-    noParse: /\.elm$/,
-    loaders: [
-      {
-        test: /\.elm$/,
-        exclude: [ /elm-stuff/, /node_modules/ ],
-        loader: 'elm-hot!elm-webpack?verbose=true&warn=true&debug=true&pathToMake=' + paths.elmMake
-      }
-    ]
-  },
+  module: {rules, noParse:  /\.elm$/},
   plugins: [
      new webpack.DefinePlugin({
-      API_URL: JSON.stringify('http://localhost:4000/api/temperatures'),
-      SOCKET_URL: JSON.stringify('ws://localhost:4000/socket/websocket')
+      API_URL: JSON.stringify('http://46.101.41.13:8080/api/temperatures'),
+      SOCKET_URL: JSON.stringify('ws://46.101.41.13:8080/socket/websocket')
     }),
     new HtmlWebpackPlugin({
       inject: true,
@@ -53,5 +63,28 @@ module.exports = {
       favicon: paths.favicon
     }),
     new webpack.HotModuleReplacementPlugin()
-  ]
+  ],
+   devServer: {
+    contentBase: paths.dist,
+    historyApiFallback: true,
+    port: 9090,
+    compress: false,
+    inline: true,
+    hot: true,
+    host: '0.0.0.0',
+    stats: {
+      assets: true,
+      children: false,
+      chunks: false,
+      hash: false,
+      modules: false,
+      publicPath: false,
+      timings: true,
+      version: false,
+      warnings: true,
+      colors: {
+        green: '\u001b[32m',
+      },
+    },
+  }
 };

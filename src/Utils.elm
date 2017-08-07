@@ -2,6 +2,7 @@ module Utils exposing (..)
 
 import Date exposing (Date)
 import Date.Format exposing (..)
+import Types exposing (Language(..))
 
 
 getDateFromString : String -> Maybe Date
@@ -45,3 +46,13 @@ isSameDay dateStringOne dateStringTwo =
 
         Nothing ->
             False
+
+
+languageToLanguageCode : Language -> String
+languageToLanguageCode language =
+    case language of
+        Norwegian ->
+            "no"
+
+        English ->
+            "en"
