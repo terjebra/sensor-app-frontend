@@ -53,8 +53,8 @@ module.exports = {
   module: {rules, noParse:  /\.elm$/},
   plugins: [
      new webpack.DefinePlugin({
-      API_URL: JSON.stringify('http://46.101.41.13:8080/api/temperatures'),
-      SOCKET_URL: JSON.stringify('ws://46.101.41.13:8080/socket/websocket')
+      API_URL: JSON.stringify('http://localhost:8080/temperatures'),
+      SOCKET_URL: JSON.stringify('ws://localhost:8080/websocket')
     }),
     new HtmlWebpackPlugin({
       inject: true,

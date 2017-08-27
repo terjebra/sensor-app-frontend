@@ -16,7 +16,6 @@ var app = Elm.Main.fullscreen({
 
 var chart = null;
 app.ports.showChart.subscribe(function(items) {
-
     chart = AmCharts.makeChart("chart", {
         "type": "serial",
         "theme": "light",
@@ -50,7 +49,7 @@ app.ports.showChart.subscribe(function(items) {
             "lineThickness": 2,
             "title": "red line",
             "useLineColorForBulletBorder": true,
-            "valueField": "reading",
+            "valueField": "temperature",
             "balloonText": "<span style='font-size:8px;'>[[value]]</span>"
         }],
         "chartScrollbar": {
@@ -79,7 +78,7 @@ app.ports.showChart.subscribe(function(items) {
             "valueZoomable":true,
             "categoryBalloonDateFormat": "JJ:NN:SS"
         },
-        "categoryField": "date",
+        "categoryField": "timestamp",
         "categoryAxis": {
             "parseDates": true,
             "minPeriod": "ss",

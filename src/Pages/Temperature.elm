@@ -7,9 +7,8 @@ import Json.Encode as Encode exposing (..)
 import Material
 import Material.Grid as Grid exposing (grid, size, cell, Device(..))
 import Material.Snackbar as Snackbar
+import WebSocket
 import Http exposing (..)
-import Phoenix.Socket
-import Phoenix.Channel
 import Utils exposing (..)
 import CustomPorts exposing (..)
 import Types exposing (..)
@@ -18,27 +17,16 @@ import Types exposing (..)
 --Constants
 
 
-temperatureChannel : String
-temperatureChannel =
-    "temperature"
-
-
-temperatureChannelEvent : String
-temperatureChannelEvent =
-    "registered"
-
-
 type alias Temperature =
-    { id : Int
-    , date : String
-    , reading : Float
+    { id : String
+    , timestamp : String
+    , temperature : Float
     }
 
 
 type alias Model =
     { temperatures : List Temperature
     , alertMessage : Maybe String
-    , socket : Phoenix.Socket.Socket Msg
     , mdl : Material.Model
     , snackbar : Snackbar.Model (Maybe Msg)
     , context : Context
@@ -47,11 +35,9 @@ type alias Model =
 
 type Msg
     = NewTemperatures (Result Http.Error (List Temperature))
-    | ReceiveNewTemperature Encode.Value
-    | PhoenixMsg (Phoenix.Socket.Msg Msg)
-    | ShowJoinedMessage
     | Mdl (Material.Msg Msg)
     | Snackbar (Snackbar.Msg (Maybe Msg))
+    | ReceiveNewTemperature String
 
 
 
@@ -61,16 +47,16 @@ type Msg
 temperatureDecoder : Decoder Temperature
 temperatureDecoder =
     Decode.map3 Temperature
-        (field "id" Decode.int)
-        (field "date" Decode.string)
-        (field "reading" Decode.float)
+        (field "id" Decode.string)
+        (field "timestamp" Decode.string)
+        (field "temperature" Decode.float)
 
 
 encodeReading : String -> Float -> Encode.Value
 encodeReading date temp =
     Encode.object
-        [ ( "date", Encode.string date )
-        , ( "reading", Encode.float temp )
+        [ ( "timestamp", Encode.string date )
+        , ( "temperature", Encode.float temp )
         ]
 
 
@@ -82,13 +68,13 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NewTemperatures (Ok temperatures) ->
-            ( { model | temperatures = temperatures }, joinChannel model )
+            ( { model | temperatures = temperatures }, showChart (getChartTemperatures temperatures) )
 
         NewTemperatures (Err error) ->
             ( { model | alertMessage = Just (httpErrorToMessage error) }, Cmd.none )
 
         ReceiveNewTemperature raw ->
-            case Decode.decodeValue temperatureDecoder raw of
+            case Decode.decodeString temperatureDecoder raw of
                 Ok temperature ->
                     if isWithinSameDay model temperature then
                         ( { model | alertMessage = Just "New temperature received", temperatures = model.temperatures ++ [ temperature ] }
@@ -101,12 +87,6 @@ update msg model =
 
                 Err error ->
                     ( { model | alertMessage = Just "errr " }, Cmd.none )
-
-        ShowJoinedMessage ->
-            ( { model | alertMessage = Just "Joined " }, Cmd.none )
-
-        PhoenixMsg msg_ ->
-            ( model, showChart (getChartTemperatures model.temperatures) )
 
         Mdl msg_ ->
             let
@@ -127,23 +107,10 @@ isWithinSameDay : Model -> Temperature -> Bool
 isWithinSameDay model temperature =
     case List.head (List.reverse model.temperatures) of
         Just head ->
-            Utils.isSameDay head.date temperature.date
+            Utils.isSameDay head.timestamp temperature.timestamp
 
         Nothing ->
             True
-
-
-joinChannel : Model -> Cmd Msg
-joinChannel model =
-    let
-        channel =
-            Phoenix.Channel.init temperatureChannel
-                |> Phoenix.Channel.onJoin (always ShowJoinedMessage)
-
-        ( phxSocket, phxCmd ) =
-            Phoenix.Socket.join channel model.socket
-    in
-        Cmd.map PhoenixMsg phxCmd
 
 
 httpErrorToMessage : Http.Error -> String
@@ -185,7 +152,7 @@ getChartTemperatures temperatures =
 
 getChartTemperature : Temperature -> ChartTemperature
 getChartTemperature temperature =
-    { reading = temperature.reading, date = (getLocalDateString temperature.date) }
+    { temperature = temperature.temperature, timestamp = (getLocalDateString temperature.timestamp) }
 
 
 view : Context -> Model -> Html Msg
@@ -206,20 +173,12 @@ view context model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Phoenix.Socket.listen model.socket PhoenixMsg
-
-
-initSocket : Settings -> Phoenix.Socket.Socket Msg
-initSocket settings =
-    Phoenix.Socket.init settings.socketUrl
-        |> Phoenix.Socket.withDebug
-        |> Phoenix.Socket.on temperatureChannelEvent temperatureChannel ReceiveNewTemperature
+    WebSocket.listen "ws://localhost:8080/websocket" ReceiveNewTemperature
 
 
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( { temperatures = []
-      , socket = initSocket context.settings
       , mdl = Material.model
       , snackbar = Snackbar.model
       , context = context
